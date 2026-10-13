@@ -1,0 +1,249 @@
+{
+  "info": {
+    "_postman_id": "71831c93-fd33-4e5e-9574-79b33a483371",
+    "name": "NewBee Mall API Test",
+    "description": "### Welcome to Postman! This is your first collection. \n\nCollections are your starting point for building and testing APIs. You can use this one to:\n\n• Group related requests\n• Test your API in real-world scenarios\n• Document and share your requests\n\nUpdate the name and overview whenever you’re ready to make it yours.\n\n[Learn more about Postman Collections.](https://learning.postman.com/docs/collections/collections-overview/)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "58858427",
+    "_collection_link": "https://go.postman.co/collection/58858427-71831c93-fd33-4e5e-9574-79b33a483371?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "登录接口",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"登录成功，自动存入token环境变量\", function () {\n    const res = pm.response.json();\n    // 校验登录业务码成功\n    pm.expect(res.resultCode).to.eql(200);\n    // 把返回的token，自动保存到【当前选中环境】的token变量\n    pm.environment.set(\"token\", res.data);\n});\n"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n\t\"loginName\": \"15768091392\",\n    \"passwordMd5\": \"e10adc3949ba59abbe56e057f20f883e\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:28019/api/v1/user/login",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "28019",
+          "path": [
+            "api",
+            "v1",
+            "user",
+            "login"
+          ]
+        },
+        "description": "This is a POST request, submitting data to an API via the request body. This request submits JSON data, and the data is reflected in the response.\n\nA successful POST request typically returns a `200 OK` or `201 Created` response code."
+      },
+      "response": []
+    },
+    {
+      "name": "商品详情接口",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP状态码检查\", function () {\n    pm.response.to.have.status(200);\n});\n\npm.test(\"商品查询结果检查\", function () {\n    const res = pm.response.json();\n\n    if (res.resultCode === 200) {\n        pm.expect(res.message).to.eql(\"SUCCESS\");\n        pm.expect(res.data).to.not.be.null;\n    } else {\n        pm.expect(res.message).to.eql(\"商品不存在\");\n    }\n});\n\npm.test(\"响应数据格式检查\", function () {\n    const res = pm.response.json();\n\n    pm.expect(res).to.have.property(\"resultCode\");\n    pm.expect(res).to.have.property(\"message\");\n    pm.expect(res).to.have.property(\"data\");\n});"
+            ]
+          }
+        },
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const goodsIds = [10893, 10895, 999999];\r\n\r\npm.variables.set(\r\n    \"goodsId\",\r\n    goodsIds[pm.info.iteration]\r\n);"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "GET",
+        "header": [
+          {
+            "key": "token",
+            "value": "{{token}}"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:28019/api/v1/goods/detail/{{goodsId}}",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "28019",
+          "path": [
+            "api",
+            "v1",
+            "goods",
+            "detail",
+            "{{goodsId}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "添加购物车",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP状态码为200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\npm.test(\"添加购物车业务成功\", function () {\r\n    const res = pm.response.json();\r\n    pm.expect(res.resultCode).to.eql(200);\r\n    pm.expect(res.message).to.eql(\"SUCCESS\");\r\n});\r\npm.test(\"添加购物车返回数据检查\", function () {\r\n    const res = pm.response.json();\r\n    pm.expect(res.data).to.not.eql(undefined);\r\n});\r\n"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "token",
+            "value": "{{token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"goodsCount\": 1,\r\n  \"goodsId\": 10893\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:28019/api/v1/shop-cart",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "28019",
+          "path": [
+            "api",
+            "v1",
+            "shop-cart"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "查询购物车",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP状态码为200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\npm.test(\"查询购物车分页-业务成功\", function () {\r\n    const res = pm.response.json();\r\n    pm.expect(res.resultCode).to.eql(200);\r\n    pm.expect(res.message).to.eql(\"SUCCESS\");\r\n});\r\npm.test(\"购物车列表数据不为空\", function () {\r\n    const res = pm.response.json();\r\n    pm.expect(res.data).to.not.eql(null);\r\n    pm.expect(res.data.list.length).greaterThan(0);\r\n});\r\n\r\n// 新增：增加判断，只有list有数据，才提取cartItemId\r\nconst res = pm.response.json();\r\nif(res.data.list && res.data.list.length > 0){\r\n    pm.environment.set(\"cartItemId\", res.data.list[0].cartItemId);\r\n}else{\r\n    console.log(\"购物车list为空，不赋值cartItemId\");\r\n}\r\n"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "token",
+            "value": "{{token}}"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:28019/api/v1/shop-cart/page?pageNumber=1",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "28019",
+          "path": [
+            "api",
+            "v1",
+            "shop-cart",
+            "page"
+          ],
+          "query": [
+            {
+              "key": "pageNumber",
+              "value": "1"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "删除购物车",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP状态码为200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\npm.test(\"删除购物项业务成功\", function () {\r\n    const res = pm.response.json();\r\n    pm.expect(res.resultCode).to.eql(200);\r\n    pm.expect(res.message).to.eql(\"SUCCESS\");\r\n});\r\n\r\npm.environment.unset(\"cartItemId\")\r\n"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "token",
+            "value": "{{token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n\t\"loginName\": \"15768091392\",\n    \"passwordMd5\": \"e10adc3949ba59abbe56e057f20f883e\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:28019/api/v1/shop-cart/{{cartItemId}}",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "28019",
+          "path": [
+            "api",
+            "v1",
+            "shop-cart",
+            "{{cartItemId}}"
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "variable": [
+    {
+      "key": "runIndex",
+      "value": ""
+    }
+  ]
+}
