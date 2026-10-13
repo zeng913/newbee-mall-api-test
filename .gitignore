@@ -1,0 +1,11 @@
+# newman生成的html报告、日志
+*.html
+newman/
+*.log
+
+# node模块
+node_modules/
+
+# 系统缓存文件
+.DS_Store
+Thumbs.db
